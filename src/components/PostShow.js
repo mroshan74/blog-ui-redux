@@ -10,49 +10,47 @@ class PostShow extends React.Component {
   componentDidMount() {
     if (this.props.users.length === 0 ) {
       this.props.dispatch(startGetUsers())
-    }
-    if (this.props.posts.length === 0) {
       this.props.dispatch(startGetPosts())
     }
     if (this.props.comments.length === 0) {
       this.props.dispatch(startGetComments())
     }
   }
-    
-  getPost(){
-      const id = this.props.match.params.id
-      const post = this.props.posts.find((post) => post.id == id)
-      console.log('post',post)
-  }
 
   render() {
-    const id = this.props.match.params.id
+    console.log('render',this.props)
     return (
       <div>
-        <h2>username: {}</h2>
-        <h3>title: {} </h3>
-        <h3>Body: </h3>
-        <p>{}</p>
-        <h3>Comments</h3>
-        <ul>
-          {this.props.comments
-            .filter((comment) => comment.postId == this.props.id)
-            .map((comment, i) => {
-              return <li key={i}>{comment.body}</li>
-            })}
-        </ul>
-        <Link to={`/users/`}>Back to user posts</Link>
+        {
+          this.props.posts ? (
+          <div>
+            <h2>username: {this.props.users.find(user => user.id == this.props.posts.userId).name}</h2>
+            <h3>title: {this.props.posts.title} </h3>
+            <h3>Body: </h3>
+            <p>{this.props.posts.body}</p>
+            <h3>Comments</h3>
+            <ul>
+              {this.props.comments.map((comment, i) => {
+                return <li key={i}>{comment.body}</li>
+              })}
+            </ul>
+            </div>)
+            :
+            <h3>loading....</h3>
+        }
+          <Link to={`/users/${this.props.posts.userId}`}>Back to user posts</Link>
       </div>
     )
   }
 }
 
-const mapStateToProps = (state) => {
-  console.log('mapState-userShow', state)
+const mapStateToProps = (state,props) => {
+  console.log('mapState-userShow', state,props)
+  const id = props.match.params.id
   return {
     users: state.users,
-    posts: state.posts,
-    comments: state.comments,
+    posts: state.posts.find((post) => post.id == id),
+    comments: state.comments.filter((comment) => comment.postId ==id)
   }
 }
 export default connect(mapStateToProps)(PostShow)

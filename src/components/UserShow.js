@@ -1,53 +1,51 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { startGetUsers } from '../redux/actions/usersAction'
 import { connect } from 'react-redux'
+
+import { startGetUsers } from '../redux/actions/usersAction'
 import { startGetPosts } from '../redux/actions/postsAction'
 
 class UserShow extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      user: '',
-    }
-  }
   componentDidMount() {
-    if (this.props.users.length === 0) {
+    const {posts} = this.props
+
+    if (posts.length === 0) {
       this.props.dispatch(startGetUsers())
-    }
-    if (this.props.posts.length === 0) {
       this.props.dispatch(startGetPosts())
     }
   }
 
   render() {
-    const { user } = this.state
-    const id = this.props.match.params.id
+    const {users,posts} = this.props
     return (
       <div>
-        <h2>username : </h2>
-        <h3>Posts made</h3>
-        <ul>
-          {this.props.posts
-            .filter((post) => post.userId == id)
-            .map((post, i) => {
+        {this.props.users ? (
+        <div>
+          <h2>username : {users.name} </h2>
+          <h3>Posts made</h3>
+          <ul>
+            {posts.map((post, i) => {
               return (
                 <li key={i}>
                   <Link to={`/posts/${post.id}`}>{post.title}</Link>
                 </li>
               )
             })}
-        </ul>
+          </ul>
+          </div>) :
+           <h3>loading....</h3>
+          }
       </div>
     )
   }
 }
 
-const mapStateToProps = (state) => {
-    console.log('mapState-userShow',state)
+const mapStateToProps = (state,props) => {
+  //console.log('MSP', props,state)
+  const id = props.match.params.id
     return {
-        users: state.users,
-        posts: state.posts
+      users: state.users.find((user) => user.id == id),
+      posts: state.posts.filter((post) => post.userId == id)
     }
 }
 export default connect(mapStateToProps)(UserShow)

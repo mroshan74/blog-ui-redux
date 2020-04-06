@@ -9,7 +9,7 @@ function App(props){
     return (
       <BrowserRouter>
         <div>
-          <Link to='/users'>Users</Link> -|-
+          <Link to='/users'>Users</Link>--- 
           <Link to='/posts'>Posts</Link>
           <Route exact path='/users' component={Users} />
           <Route
